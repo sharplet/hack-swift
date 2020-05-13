@@ -20,12 +20,10 @@ public struct FileHandle {
     var file = try open(path, mode: mode)
     do {
       let result = try fileHandler(&file)
-      try file.close()
+      try file.closeIfNeeded()
       return result
     } catch {
-      if !file.isKnownClosed {
-        try file.close()
-      }
+      try file.closeIfNeeded()
       throw error
     }
   }
@@ -46,6 +44,11 @@ public struct FileHandle {
     } else {
       throw POSIXError.errno
     }
+  }
+
+  private mutating func closeIfNeeded() throws {
+    guard !isKnownClosed else { return }
+    try close()
   }
 
   public func readLine(strippingNewline: Bool = false) throws -> String? {
