@@ -9,6 +9,15 @@
           "revision": "9f04d1ff1afbccd02279338a2c91e5f27c45e93a",
           "version": "0.0.5"
         }
+      },
+      {
+        "package": "SwiftIO",
+        "repositoryURL": "https://github.com/sharplet/SwiftIO.git",
+        "state": {
+          "branch": null,
+          "revision": "6b5aac17b136e01360c2fa71149cdc45bd34895b",
+          "version": "0.1.0"
+        }
       }
     ]
   },

@@ -1,10 +1,18 @@
 import ArgumentParser
 import Foundation
 
-struct Path: RawRepresentable {
-  var rawValue: String
+public struct Path: RawRepresentable {
+  public var rawValue: String
 
-  var components: [Substring] {
+  public init(rawValue: String) {
+    if rawValue.isEmpty {
+      self.rawValue = "."
+    } else {
+      self.rawValue = rawValue
+    }
+  }
+
+  public var components: [Substring] {
     var components = rawValue.split(separator: "/", omittingEmptySubsequences: true)
     if let range = rawValue.range(of: "/", options: .anchored) {
       components.insert(rawValue[range], at: 0)
@@ -12,7 +20,7 @@ struct Path: RawRepresentable {
     return components
   }
 
-  var `extension`: Substring {
+  public var `extension`: Substring {
     guard let basename = components.last else { return "" }
     var separator = basename.lastIndex(of: ".") ?? basename.endIndex
     _ = basename.formIndex(&separator, offsetBy: 1, limitedBy: basename.endIndex)
@@ -21,11 +29,13 @@ struct Path: RawRepresentable {
 }
 
 extension Path: ExpressibleByArgument {
-  init?(argument: String) {
-    if argument.isEmpty {
-      self.init(rawValue: ".")
-    } else {
-      self.init(rawValue: argument)
-    }
+  public init?(argument: String) {
+    self.init(rawValue: argument)
+  }
+}
+
+extension Path: ExpressibleByStringLiteral {
+  public init(stringLiteral value: StringLiteralType) {
+    self.init(rawValue: value)
   }
 }

@@ -1,4 +1,5 @@
 import ArgumentParser
+import SwiftIO
 
 struct HSM: ParsableCommand {
   @Argument(help: .init(valueName: "File.asm"))
@@ -17,7 +18,13 @@ struct HSM: ParsableCommand {
   }
 
   func run() throws {
-    print("Hello, world!")
+    for path in paths {
+      try FileHandle.open(path, mode: .read) { file in
+        while let line = try file.readLine(strippingNewline: true) {
+          print(line)
+        }
+      }
+    }
   }
 }
 
