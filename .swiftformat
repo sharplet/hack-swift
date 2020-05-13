@@ -1,2 +1,3 @@
 --ifdef outdent
 --indent 2
+--xcodeindentation enabled
