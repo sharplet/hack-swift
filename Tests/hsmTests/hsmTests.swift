@@ -7,14 +7,16 @@ final class hsmTests: XCTestCase {
     let pipe = Pipe()
     let process = Process()
     process.executableURL = productsDirectory.appendingPathComponent("hsm")
+    process.arguments = ["file.asm"]
+    process.standardError = pipe
     process.standardOutput = pipe
     try process.run()
     process.waitUntilExit()
 
     let data = try pipe.fileHandleForReading.readToEnd() ?? Data()
-    let output = String(data: data, encoding: .utf8)
+    let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .newlines)
 
-    XCTAssertEqual(output, "Hello, world!\n")
+    XCTAssertEqual(output, "Hello, world!")
   }
 
   var productsDirectory: URL {
