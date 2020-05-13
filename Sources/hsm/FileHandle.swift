@@ -2,50 +2,54 @@ import Foundation
 import SwiftIO
 
 public struct FileHandle {
-  public static func open(_ path: Path, mode: Mode = .read) throws -> FileHandle {
+  public static func open(
+    _ path: Path,
+    mode: Mode = .read
+  ) throws -> FileHandle {
     guard let handle = fopen(path.rawValue, mode.rawValue) else {
       throw POSIXError.errno
     }
     return FileHandle(handle: handle)
   }
 
-  public static func open<Result>(_ path: Path, mode: Mode = .read, fileHandler: (inout FileHandle) throws -> Result) throws -> Result {
+  public static func open<Result>(
+    _ path: Path,
+    mode: Mode = .read,
+    fileHandler: (inout FileHandle) throws -> Result
+  ) throws -> Result {
     var file = try open(path, mode: mode)
     do {
       let result = try fileHandler(&file)
       try file.close()
       return result
     } catch {
-      if file.isOpen {
+      if !file.isKnownClosed {
         try file.close()
       }
       throw error
     }
   }
 
-  private var handle: UnsafeMutablePointer<FILE>!
-  private var isInvalid: Bool = false
-
-  public var isOpen: Bool {
-    handle != nil
-  }
+  private let handle: UnsafeMutablePointer<FILE>
+  private var isKnownClosed = false
+  private var isKnownInvalid = false
 
   public var writeErrorHandler: ((POSIXError) -> Void)?
 
   public mutating func close() throws {
-    precondition(isOpen)
+    precondition(!isKnownClosed)
 
-    defer { isInvalid = true }
+    defer { isKnownInvalid = true }
 
     if fclose(handle) == 0 {
-      handle = nil
+      isKnownClosed = true
     } else {
       throw POSIXError.errno
     }
   }
 
   public func readLine(strippingNewline: Bool = false) throws -> String? {
-    precondition(!isInvalid, "Attempted to read an invalid file stream.")
+    precondition(!isKnownInvalid, "Attempted to read an invalid file stream.")
 
     var count = 0
     guard let pointer = fgetln(handle, &count) else {
@@ -62,10 +66,10 @@ public struct FileHandle {
 
     if strippingNewline {
       strip: while end > buffer.startIndex {
-        let i = buffer.index(before: end)
-        switch Unicode.Scalar(buffer[i]) {
+        let index = buffer.index(before: end)
+        switch Unicode.Scalar(buffer[index]) {
         case "\r", "\n":
-          end = i
+          end = index
         default:
           break strip
         }
@@ -91,7 +95,7 @@ extension FileHandle {
 
 extension FileHandle: TextOutputStream {
   public func write(_ string: String) {
-    precondition(!isInvalid, "Attempted to write to an invalid file stream.")
+    precondition(!isKnownInvalid, "Attempted to write to an invalid file stream.")
     if fputs(string, handle) == EOF, let errorHandler = writeErrorHandler {
       errorHandler(.errno)
     }
