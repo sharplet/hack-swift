@@ -18,7 +18,9 @@ let package = Package(
     .package(url: "https://github.com/sharplet/SwiftIO.git", from: "0.1.0"),
   ],
   targets: [
-    .target(name: "hsm", dependencies: [.argumentParser, "SwiftIO"]),
-    .testTarget(name: "hsmTests", dependencies: ["hsm"]),
+    .target(name: "hsm", dependencies: [.argumentParser, "IO", "SwiftIO"]),
+    .target(name: "IO"),
+    .testTarget(name: "hsmTests", dependencies: ["hsm", "SwiftIO"]),
+    .testTarget(name: "IOTests", dependencies: ["IO"]),
   ]
 )

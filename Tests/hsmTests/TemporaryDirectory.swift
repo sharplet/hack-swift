@@ -1,4 +1,5 @@
 import Foundation
+import SwiftIO
 
 func createTemporaryDirectory(withTemplate template: String) throws -> URL {
   try (NSTemporaryDirectory() as NSString).appendingPathComponent(template).withCString { template in

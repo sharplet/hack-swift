@@ -1,15 +1,16 @@
 import Foundation
+import IO
 import SwiftIO
 
 public struct FileHandle {
-  public static func open(_ path: Path, mode: Mode) throws -> FileHandle {
+  public static func open(_ path: Path, mode: Mode = .read) throws -> FileHandle {
     guard let handle = fopen(path.rawValue, mode.rawValue) else {
       throw POSIXError.errno
     }
     return FileHandle(handle: handle)
   }
 
-  public static func open<Result>(_ path: Path, mode: Mode, fileHandler: (inout FileHandle) throws -> Result) throws -> Result {
+  public static func open<Result>(_ path: Path, mode: Mode = .read, fileHandler: (inout FileHandle) throws -> Result) throws -> Result {
     var file = try open(path, mode: mode)
     do {
       let result = try fileHandler(&file)
@@ -29,6 +30,8 @@ public struct FileHandle {
   public var isOpen: Bool {
     handle != nil
   }
+
+  public var writeErrorHandler: ((POSIXError) -> Void)?
 
   public mutating func close() throws {
     precondition(isOpen)
@@ -84,5 +87,14 @@ extension FileHandle {
     case readWriteNew = "w+x"
     case append = "a"
     case readAppend = "a+"
+  }
+}
+
+extension FileHandle: TextOutputStream {
+  public func write(_ string: String) {
+    precondition(!isInvalid, "Attempted to write to an invalid file stream.")
+    if fputs(string, handle) == EOF, let errorHandler = writeErrorHandler {
+      errorHandler(.errno)
+    }
   }
 }

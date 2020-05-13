@@ -17,8 +17,10 @@ final class hsmTests: XCTestCase {
 
   func testExample() throws {
     let foo = temporaryDirectory.appendingPathComponent("foo.asm", isDirectory: false)
+    let fooOutput = foo.deletingPathExtension().appendingPathExtension("hack")
     try Data("foo\n".utf8).write(to: foo)
     let bar = temporaryDirectory.appendingPathComponent("bar.asm", isDirectory: false)
+    let barOutput = bar.deletingPathExtension().appendingPathExtension("hack")
     try Data("bar\n".utf8).write(to: bar)
 
     let pipe = Pipe()
@@ -30,10 +32,13 @@ final class hsmTests: XCTestCase {
     try process.run()
     process.waitUntilExit()
 
-    let data = try pipe.fileHandleForReading.readToEnd() ?? Data()
-    let output = String(data: data, encoding: .utf8)
+    let output = try pipe.fileHandleForReading.readToEnd().flatMap { data in
+      String(data: data, encoding: .utf8)
+    } ?? ""
 
-    XCTAssertEqual(output, "foo\nbar\n")
+    XCTAssertEqual(output, "")
+    XCTAssertEqual(try String(contentsOf: fooOutput), "foo\n")
+    XCTAssertEqual(try String(contentsOf: barOutput), "bar\n")
   }
 
   var productsDirectory: URL {
