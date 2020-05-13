@@ -1,5 +1,4 @@
 import Foundation
-import IO
 import SwiftIO
 
 public struct FileHandle {

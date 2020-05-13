@@ -1,5 +1,5 @@
 import ArgumentParser
-import IO
+import SwiftIO
 
 extension Path: ExpressibleByArgument {
   public init?(argument: String) {

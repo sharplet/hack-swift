@@ -1,6 +1,5 @@
 import ArgumentParser
 import Foundation
-import IO
 import SwiftIO
 
 struct HSM: ParsableCommand {
