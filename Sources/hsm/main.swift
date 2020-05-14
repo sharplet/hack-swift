@@ -40,7 +40,7 @@ struct HSM: ParsableCommand {
           destination.writeErrorHandler = handleWriteError
 
           for instruction in program.instructions {
-            print(instruction, to: &destination)
+            print(instruction.stringValue, to: &destination)
           }
         }
       }
