@@ -55,3 +55,21 @@ public enum Instruction: Equatable {
     }
   }
 }
+
+extension Instruction: CustomStringConvertible {
+  public var description: String {
+    switch self {
+    case let .a(value):
+      return "@\(value)"
+    case let .c(dest, comp, jump):
+      var description = comp.rawValue
+      if let dest = dest {
+        description.insert(contentsOf: "\(dest.rawValue)=", at: description.startIndex)
+      }
+      if let jump = jump {
+        description.append(";\(jump.rawValue)")
+      }
+      return description
+    }
+  }
+}

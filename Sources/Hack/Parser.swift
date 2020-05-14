@@ -91,21 +91,10 @@ extension Parser {
 extension Parser.Instruction: CustomStringConvertible {
   public var description: String {
     switch self {
-    case let .resolved(.a(value)):
-      return "a(\(value))"
-
+    case let .resolved(instruction):
+      return "\(instruction)"
     case let .symbolic(symbol):
-      return "a(@\(symbol))"
-
-    case let .resolved(.c(dest, comp, jump)):
-      var description = comp.rawValue
-      if let dest = dest {
-        description.insert(contentsOf: "\(dest.rawValue)=", at: description.startIndex)
-      }
-      if let jump = jump {
-        description.append(";\(jump.rawValue)")
-      }
-      return description
+      return "@\(symbol)"
     }
   }
 }

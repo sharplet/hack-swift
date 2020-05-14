@@ -38,8 +38,8 @@ final class hsmTests: XCTestCase {
     } ?? ""
 
     XCTAssertEqual(output, "")
-    XCTAssertEqual(try String(contentsOf: fooOutput), "a(@foo)\nM=D\n")
-    XCTAssertEqual(try String(contentsOf: barOutput), "a(@bar)\nA=D+1\n")
+    XCTAssertEqual(try String(contentsOf: fooOutput), "@16\nM=D\n")
+    XCTAssertEqual(try String(contentsOf: barOutput), "@16\nA=D+1\n")
   }
 
   var productsDirectory: URL {

@@ -34,10 +34,12 @@ struct HSM: ParsableCommand {
           try parser.parse(line, symbols: &symbols)
         }
 
+        let program = Program(from: parser.instructions, symbols: &symbols)
+
         try FileHandle.open(destination, mode: .truncate) { destination in
           destination.writeErrorHandler = handleWriteError
 
-          for instruction in parser.instructions {
+          for instruction in program.instructions {
             print(instruction, to: &destination)
           }
         }
