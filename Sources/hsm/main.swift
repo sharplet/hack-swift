@@ -1,4 +1,5 @@
 import ArgumentParser
+import Hack
 import Foundation
 import SwiftIO
 
@@ -26,11 +27,17 @@ struct HSM: ParsableCommand {
       try FileHandle.open(path) { file in
         file.writeErrorHandler = handleWriteError
 
+        var parser = Parser()
+
+        while let line = try file.readLine(strippingNewline: true) {
+          try parser.parse(line)
+        }
+
         try FileHandle.open(destination, mode: .truncate) { destination in
           destination.writeErrorHandler = handleWriteError
 
-          while let line = try file.readLine(strippingNewline: true) {
-            print(line, to: &destination)
+          for instruction in parser.instructions {
+            print(instruction, to: &destination)
           }
         }
       }
