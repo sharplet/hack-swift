@@ -3,7 +3,7 @@ public struct Parser {
 
   public init() {}
 
-  public mutating func parse(_ line: String) throws {
+  public mutating func parse(_ line: String, symbols: inout SymbolTable) throws {
     var line = Substring(line)
 
     if let comment = line.range(of: "//") {
@@ -14,7 +14,19 @@ public struct Parser {
 
     guard !line.isEmpty else { return }
 
-    if line.eat("@") {
+    if line.eat("(") {
+      guard let end = line.firstIndex(of: ")") else {
+        throw ParserError.unclosedLabel(String(line))
+      }
+
+      let label = String(line[..<end])
+
+      guard symbols[label] == nil else {
+        throw ParserError.duplicateLabel(label)
+      }
+
+      symbols[label: label] = instructions.count
+    } else if line.eat("@") {
       guard let value = line.prefix(while: \.isAValue).nonEmpty else {
         throw ParserError.aInstructionMissingIdentifier
       }

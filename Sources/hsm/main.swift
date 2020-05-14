@@ -28,9 +28,10 @@ struct HSM: ParsableCommand {
         file.writeErrorHandler = handleWriteError
 
         var parser = Parser()
+        var symbols = SymbolTable()
 
         while let line = try file.readLine(strippingNewline: true) {
-          try parser.parse(line)
+          try parser.parse(line, symbols: &symbols)
         }
 
         try FileHandle.open(destination, mode: .truncate) { destination in
