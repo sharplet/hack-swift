@@ -20,4 +20,14 @@ extension Substring {
     }
     return nil
   }
+
+  mutating func trim(where predicate: (Character) throws -> Bool) rethrows {
+    if let prefix = prefix(while: \.isWhitespace).nonEmpty {
+      removeSubrange(..<prefix.endIndex)
+    }
+
+    if let suffix = suffix(while: \.isWhitespace).nonEmpty {
+      removeSubrange(suffix.startIndex...)
+    }
+  }
 }

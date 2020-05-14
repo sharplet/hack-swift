@@ -4,9 +4,15 @@ public struct Parser {
   public init() {}
 
   public mutating func parse(_ line: String) throws {
-    guard var line = line.drop(while: \.isWhitespace).nonEmpty else {
-      return
+    var line = Substring(line)
+
+    if let comment = line.range(of: "//") {
+      line.removeSubrange(comment.lowerBound...)
     }
+
+    line.trim(where: \.isWhitespace)
+
+    guard !line.isEmpty else { return }
 
     if line.eat("@") {
       guard let value = line.prefix(while: \.isAValue).nonEmpty else {

@@ -24,6 +24,11 @@ final class ParserTests: XCTestCase {
     XCTAssertEqual(parser.instructions, [])
   }
 
+  func testItIgnoresCommentOnlyLines() throws {
+    try parser.parse("// hello world")
+    XCTAssertEqual(parser.instructions, [])
+  }
+
   func testItParsesAInstructions() throws {
     try parser.parse(" @1")
     try parser.parse("@456")
