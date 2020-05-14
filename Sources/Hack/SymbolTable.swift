@@ -1,7 +1,9 @@
 public struct SymbolTable {
+  private var counter: Int
   private var symbols: [String: Int]
 
   public init() {
+    counter = 16
     symbols = [
       "R0": 0,
       "R1": 1,
@@ -36,5 +38,12 @@ public struct SymbolTable {
   internal subscript(label symbol: String) -> Int? {
     get { symbols[symbol] }
     set { symbols[symbol] = newValue }
+  }
+
+  public mutating func allocate(_ symbol: String) -> Int {
+    precondition(symbols[symbol] == nil)
+    defer { counter += 1 }
+    symbols[symbol] = counter
+    return counter
   }
 }

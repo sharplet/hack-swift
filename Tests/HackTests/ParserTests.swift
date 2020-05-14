@@ -39,11 +39,11 @@ final class ParserTests: XCTestCase {
     try parser.parse("@foo//bar", symbols: &symbols)
     try parser.parse("@-1", symbols: &symbols)
     XCTAssertEqual(parser.instructions, [
-      .a(.literal(1)),
-      .a(.literal(456)),
-      .a(.symbol("foo")),
-      .a(.symbol("foo")),
-      .a(.literal(-1)),
+      .resolved(.a(1)),
+      .resolved(.a(456)),
+      .symbolic("foo"),
+      .symbolic("foo"),
+      .resolved(.a(-1)),
     ])
   }
 
@@ -57,13 +57,13 @@ final class ParserTests: XCTestCase {
     try parser.parse("M=D;JNE", symbols: &symbols)
     print(parser.instructions)
     XCTAssertEqual(parser.instructions, [
-      .c(comp: .zero, jump: .jmp),
-      .c(dest: .a, comp: .one),
-      .c(dest: .m, comp: .minusOne),
-      .c(dest: .ad, comp: .m),
-      .c(dest: .dm, comp: .minusD),
-      .c(comp: .notD, jump: .jeq),
-      .c(dest: .m, comp: .d, jump: .jne),
+      .resolved(.c(comp: .zero, jump: .jmp)),
+      .resolved(.c(dest: .a, comp: .one)),
+      .resolved(.c(dest: .m, comp: .minusOne)),
+      .resolved(.c(dest: .ad, comp: .m)),
+      .resolved(.c(dest: .dm, comp: .minusD)),
+      .resolved(.c(comp: .notD, jump: .jeq)),
+      .resolved(.c(dest: .m, comp: .d, jump: .jne)),
     ])
   }
 
