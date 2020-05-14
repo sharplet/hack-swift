@@ -40,34 +40,22 @@ final class ParserTests: XCTestCase {
   }
 
   func testItParsesCComputations() throws {
-    try parser.parse("0")
-    try parser.parse("1")
-    try parser.parse("-1")
-    try parser.parse("D")
-    try parser.parse("-D")
-    try parser.parse("!D")
-    try parser.parse("A")
-    try parser.parse("-A")
-    try parser.parse("!A")
-    try parser.parse("D+1")
-    try parser.parse("1+D")
-    try parser.parse("A+1")
-    try parser.parse("1+A")
-    try parser.parse("D-1")
-    try parser.parse("A-1")
-    try parser.parse("D+A")
-    try parser.parse("A+D")
-    try parser.parse("D-A")
-    try parser.parse("A-D")
-    try parser.parse("D&A")
-    try parser.parse("A&D")
-    try parser.parse("D|A")
-    try parser.parse("A|D")
-
-    let expected = Parser.C.Computation.allCases.map { comp in
-      Parser.Instruction.c(comp: comp)
-    }
-
-    XCTAssertEqual(parser.instructions, expected)
+    try parser.parse("0;JMP")
+    try parser.parse("A=1")
+    try parser.parse("M=-1")
+    try parser.parse("AD=M")
+    try parser.parse("DM=-D")
+    try parser.parse("!D;JEQ")
+    try parser.parse("M=D;JNE")
+    print(parser.instructions)
+    XCTAssertEqual(parser.instructions, [
+      .c(comp: .zero, jump: .jmp),
+      .c(dest: .a, comp: .one),
+      .c(dest: .m, comp: .minusOne),
+      .c(dest: .ad, comp: .m),
+      .c(dest: .dm, comp: .minusD),
+      .c(comp: .notD, jump: .jeq),
+      .c(dest: .m, comp: .d, jump: .jne),
+    ])
   }
 }
