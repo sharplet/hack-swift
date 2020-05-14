@@ -8,4 +8,16 @@ extension Substring {
     removeSubrange(range)
     return true
   }
+
+  mutating func eat<R: RawRepresentable & CaseIterable>(
+    _: R.Type
+  ) -> R? where R.RawValue == String {
+    let cases = R.allCases.sorted(by: { $0.rawValue.count > $1.rawValue.count })
+    for `case` in cases {
+      if eat(`case`.rawValue) {
+        return `case`
+      }
+    }
+    return nil
+  }
 }
