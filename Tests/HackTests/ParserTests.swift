@@ -29,11 +29,13 @@ final class ParserTests: XCTestCase {
     try parser.parse("@456")
     try parser.parse("@foo")
     try parser.parse("@foo//bar")
+    try parser.parse("@-1")
     XCTAssertEqual(parser.instructions, [
-      .a("1"),
-      .a("456"),
-      .a("foo"),
-      .a("foo"),
+      .aliteral(1),
+      .aliteral(456),
+      .asymbol("foo"),
+      .asymbol("foo"),
+      .aliteral(-1),
     ])
   }
 }
