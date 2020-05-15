@@ -14,7 +14,7 @@ let package = Package(
     .macOS(.v10_15),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.0.1"),
+    .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.0.6"),
     .package(url: "https://github.com/sharplet/SwiftIO.git", from: "0.1.1"),
   ],
   targets: [

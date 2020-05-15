@@ -4,9 +4,14 @@ import SwiftIO
 public struct FileHandle {
   public static func open(
     _ path: Path,
-    mode: Mode = .read
+    mode: Mode = .read,
+    binary: Bool = false
   ) throws -> FileHandle {
-    guard let handle = fopen(path.rawValue, mode.rawValue) else {
+    var mode = mode.rawValue
+    if binary {
+      mode += "b"
+    }
+    guard let handle = fopen(path.rawValue, mode) else {
       throw POSIXError.errno
     }
     return FileHandle(handle: handle)
@@ -15,9 +20,10 @@ public struct FileHandle {
   public static func open<Result>(
     _ path: Path,
     mode: Mode = .read,
+    binary: Bool = false,
     fileHandler: (inout FileHandle) throws -> Result
   ) throws -> Result {
-    var file = try open(path, mode: mode)
+    var file = try open(path, mode: mode, binary: binary)
     do {
       let result = try fileHandler(&file)
       try file.closeIfNeeded()
@@ -80,6 +86,27 @@ public struct FileHandle {
     }
 
     return String(decoding: buffer[..<end], as: UTF8.self)
+  }
+
+  public func write<Bytes: Sequence>(_ bytes: Bytes) throws where Bytes.Element == UInt8 {
+    var count = 0
+
+    var countWritten = bytes.withContiguousStorageIfAvailable { buffer -> Int in
+      count = buffer.count
+      precondition(count > 0)
+      return fwrite(buffer.baseAddress, 1, count, handle)
+    }
+
+    if countWritten == nil {
+      let array = Array(bytes)
+      count = array.count
+      precondition(count > 0)
+      countWritten = fwrite(array, 1, count, handle)
+    }
+
+    if countWritten != count {
+      throw POSIXError.errno
+    }
   }
 }
 
