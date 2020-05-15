@@ -74,6 +74,8 @@ private extension Character {
     self == "-" || self == "_"
       || isLetter
       || isNumber
+      || isPunctuation
+      || isSymbol
   }
 
   var isCSeparator: Bool {
