@@ -13,6 +13,9 @@ let package = Package(
   platforms: [
     .macOS(.v10_15),
   ],
+  products: [
+    .executable(name: "hsm", targets: ["hsm"]),
+  ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.0.6"),
     .package(url: "https://github.com/sharplet/SwiftIO.git", from: "0.1.1"),
